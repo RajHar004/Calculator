@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <title>Calculator</title>
+  <style>
+    .button {
+      width: 150px;
+      height: 60px;
+      font-size: 46px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: rgb(129, 227, 158);
+    }
+    .operator {
+      background-color: #ffffff;
+    }
+    .equalBtn {
+      background-color: #e30505;
+      color: #fff;
+      width: 148px;
+    }
+    .highlight {
+      background-color: yellow;
+    }
+    #history-container {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    #history-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    #history-list li {
+      margin-bottom: 5px;
+      background: #f9f9f9;
+      padding: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #history-list li:hover {
+      background-color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="calculator">
+      <select id="calculator-type" class="type" onchange="changeCalculatorType()">
+        <option value="basic">Basic Calculator</option>
+        <option value="program">Programmable Calculator</option>
+      </select>
+      <input type="text" id="inputBox" class="inputbox" placeholder="0" />
+      <div id="basic-calculator">
+        <div>
+          <button class="button operator" onclick="clearResult()">AC</button>
+          <button class="button operator" onclick="deleteResult()">DEL</button>
+          <button class="button operator" onclick="insertValue('%')">%</button>
+          <button class="button operator" onclick="insertValue('/')">/</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('7')">7</button>
+          <button class="button" onclick="insertValue('8')">8</button>
+          <button class="button" onclick="insertValue('9')">9</button>
+          <button class="button operator" onclick="insertValue('*')">*</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('4')">4</button>
+          <button class="button" onclick="insertValue('5')">5</button>
+          <button class="button" onclick="insertValue('6')">6</button>
+          <button class="button operator" onclick="insertValue('-')">-</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('1')">1</button>
+          <button class="button" onclick="insertValue('2')">2</button>
+          <button class="button" onclick="insertValue('3')">3</button>
+          <button class="button operator" onclick="insertValue('+')">+</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('00')">00</button>
+          <button class="button" onclick="insertValue('0')">0</button>
+          <button class="button" onclick="insertValue('.')">.</button>
+          <button class="button equalBtn" onclick="calculate()">Ans</button>
+        </div>
+      </div>
+      <div id="program-calculator" style="display: none;">
+        <div>
+          <button class="button operator" onclick="clearResult()">AC</button>
+          <button class="button operator" onclick="deleteResult()">DEL</button>
+          <button class="button operator" onclick="leftShift()"><<</button>
+          <button class="button operator" onclick="rightShift()">>></button>
+        </div>
+        <div>
+          <button class="button operator" onclick="insertValue('-')">-</button>
+          <button class="button operator" onclick="insertValue('+')">+</button>
+          <button class="button operator" onclick="insertValue('*')">*</button>
+          <button class="button operator" onclick="insertValue('/')">/</button>  
+        </div>
+        <div>
+          <button class="button operator" onclick="convertToBinary()" id="binaryButton">Bin</button>
+          <button class="button operator" onclick="convertToOctal()" id="octalButton">Oct</button>
+          <button class="button operator" onclick="convertToDecimal()" id="decimalButton">Dec</button>
+          <button class="button operator" onclick="convertToHexadecimal()" id="hexadecimalButton">Hex</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('A')">A</button>
+          <button class="button" onclick="insertValue('B')">B</button>
+          <button class="button" onclick="insertValue('C')">C</button>
+          <button class="button" onclick="insertValue('D')">D</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('E')">E</button>
+          <button class="button" onclick="insertValue('F')">F</button>
+          <button class="button" onclick="insertValue('8')">8</button>
+          <button class="button" onclick="insertValue('9')">9</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('4')">4</button>
+          <button class="button" onclick="insertValue('5')">5</button>
+          <button class="button" onclick="insertValue('6')">6</button>
+          <button class="button" onclick="insertValue('7')">7</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('0')">0</button>
+          <button class="button" onclick="insertValue('1')">1</button>
+          <button class="button" onclick="insertValue('2')">2</button>
+          <button class="button" onclick="insertValue('3')">3</button>
+        </div>
+        <div>
+          <button class="button" onclick="insertValue('00')">00</button>
+          <button class="button" onclick="insertValue('.')">.</button>
+          <button class="button" onclick="insertValue('..')">..</button>
+          <button class="button equalBtn" onclick="calculateAndConvert()">Ans</button>
+        </div>
+      </div>
+      <button class="button" onclick="toggleHistory()">
+        <i class="fa fa-history" style="font-size:44px"></i> 
+      </button>
+      <div id="history-container" style="display: none;">
+        <h2>Calculation History</h2>
+        <ul id="history-list"></ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    let result = document.getElementById("inputBox");
+    let calculatorType = document.getElementById("calculator-type");
+    let currentBase = 10;
+    let currentHighlightedButton = null;
+    let history = [];
+    function insertValue(value) {
+      if (currentBase === 10 || currentBase === 16) {
+        if ((value >= '0' && value <= '9') ||
+            ( value.toUpperCase() >= 'A' && value.toUpperCase() <= 'F')) {
+          result.value += value;
+        } else if (['+', '-', '*', '/', '%'].includes(value)) {
+          result.value += value;
+        }
+      } else if (currentBase === 8) {
+        if ((value >= '0' && value <= '7') || ['+', '-', '*', '/', '%'].includes(value)) {
+          result.value += value;
+        }
+      } else if (currentBase === 2) {
+        if ((value === '0' || value === '1') || ['+', '-', '*', '/', '%'].includes(value)) {
+          result.value += value;
+        }
+      }
+    }
+    function clearResult() {
+      result.value = '';
+    }
+    function deleteResult() {
+      result.value = result.value.slice(0, -1);
+    }
+    function calculate() {
+      try {
+        let calculation = result.value + ' = ' + eval(result.value);
+        history.push(calculation);
+        updateHistory();
+        result.value = eval(result.value);
+      } catch (error) {
+        result.value = 'Error';
+      }
+    }
+    function changeCalculatorType() {
+      if (calculatorType.value === 'basic') {
+        document.getElementById("basic-calculator").style.display = "block";
+        document.getElementById("program-calculator").style.display = "none";
+      } else {
+        document.getElementById("basic-calculator").style.display = "none";
+        document.getElementById("program-calculator").style.display = "block";
+      }
+    }
+    function highlightButton(button) {
+      if (currentHighlightedButton) {
+        currentHighlightedButton.classList.remove('highlight');
+      }
+      button.classList.add('highlight');
+      currentHighlightedButton = button;
+    }
+    function convertToBinary() {
+      let value = result.value;
+      if (value === '' || isNaN(parseInt(value, currentBase))) {
+        result.value = '0';
+      } else {
+        let decimal = parseInt(value, currentBase);
+        result.value = decimal.toString(2);
+      }
+      currentBase = 2;
+      highlightButton(document.getElementById("binaryButton"));
+      enableBinaryButtons();
+    }
+    function convertToOctal() {
+      let value = result.value;
+      if (value === '' || isNaN(parseInt(value, currentBase))) {
+        result.value = '0';
+      } else {
+        let decimal = parseInt(value, currentBase);
+        result.value = decimal.toString(8);
+      }
+      currentBase = 8;
+      highlightButton(document.getElementById("octalButton"));
+      enableOctalButtons();
+    }
+    function convertToDecimal() {
+      let value = result.value;
+      if (value === '' || isNaN(parseInt(value, currentBase))) {
+        result.value = '0';
+      } else {
+        result.value = parseInt(value, currentBase).toString(10);
+      }
+      currentBase = 10;
+      highlightButton(document.getElementById("decimalButton"));
+      enableDecimalButtons();
+    }
+    function convertToHexadecimal() {
+      let value = result.value;
+      if (value === '' || isNaN(parseInt(value, currentBase))) {
+        result.value = '0';
+      } else {
+        let decimal = parseInt(value, currentBase);
+        result.value = decimal.toString(16);
+      }
+      currentBase = 16;
+      highlightButton(document.getElementById("hexadecimalButton"));
+      enableHexadecimalButtons();
+    }
+    function enableBinaryButtons() {
+      disableAllButtons();
+      enableButtons(['0', '1']);
+    }
+    function enableOctalButtons() {
+      disableAllButtons();
+      enableButtons(['0', '1', '2', '3', '4', '5', '6', '7']);
+    }
+    function enableDecimalButtons() {
+      disableAllButtons();
+      enableButtons(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    }
+    function enableHexadecimalButtons() {
+      disableAllButtons();
+      enableButtons(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']);
+    }
+    function disableAllButtons() {
+      let buttons = document.querySelectorAll('#program-calculator button');
+      buttons.forEach(button => {
+        if (!button.classList.contains('operator') && !button.classList.contains('equalBtn')) {
+          button.disabled = true;
+        }
+      });
+    }
+    function enableButtons(values) {
+      values.forEach(value => {
+        let button = Array.from(document.querySelectorAll('#program-calculator button')).find(b => b.innerText === value);
+        if (button) {
+          button.disabled = false;
+        }
+      });
+    }
+    function calculateAndConvert() {
+      try {
+        let calculation = result.value + ' = ' + eval(result.value);
+        history.push(calculation);
+        updateHistory();
+        result.value = eval(result.value);
+      } catch (error) {
+        result.value = 'Error';
+        return;
+      }
+    }
+    function leftShift() {
+      let value = result.value;
+      if (value === '' || isNaN(parseInt(value, currentBase))) {
+        result.value = '0';
+      } else {
+        let decimal = parseInt(value, currentBase);
+        result.value = (decimal << 1).toString(currentBase);
+      }
+    }
+    function rightShift() {
+      let value = result.value;
+      if (value === '' || isNaN(parseInt(value, currentBase))) {
+        result.value = '0';
+      } else {
+        let decimal = parseInt(value, currentBase);
+        result.value = (decimal >> 1).toString(currentBase);
+      }
+    }
+    function toggleHistory() {
+      let historyContainer = document.getElementById("history-container");
+      if (historyContainer.style.display === "none") {
+        historyContainer.style.display = "block";
+      } else {
+        historyContainer.style.display = "none";
+      }
+    }
+    function updateHistory() {
+      let historyList = document.getElementById("history-list");
+      historyList.innerHTML = '';
+      history.forEach(entry => {
+        let li = document.createElement('li');
+        li.textContent = entry;
+        li.onclick = () => {
+          result.value = entry.split(' = ')[0];
+        };
+        historyList.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
